@@ -13,7 +13,7 @@ public class DVD {
 	
 	Entorno entorno;
 	
-		
+	//test	
 	DVD(Entorno e, double xInicial, int factorX){ //factorX determina si su movimiento inicial es izquierda o derecha
 		this.x = xInicial; //cambiar a valores random en constructor
 		this.y = 350;
