@@ -10,6 +10,7 @@ public class Gondolf {
 	private double y;
 	int HP;
 	int Energia;
+	int iFrames; //frames de invencibilidad
 	
 	Image imagenIzq;
 	Image imageDer;
@@ -27,6 +28,7 @@ public class Gondolf {
 		this.setY(e.alto()/2); //AGREGAR Y TOMAR EN CUENTA EL TAMAÑO DEL MENU
 		this.HP = 100;
 		this.Energia = 100;
+		this.iFrames = 0;
 		this.escala = 0.15;
 		this.imagenIzq = Herramientas.cargarImagen("magoIzq.png");
 		this.imageDer = Herramientas.cargarImagen("magoDer.png");
@@ -52,6 +54,9 @@ public class Gondolf {
 			setX(getX()+n);
 			this.direccion = true;
 		}
+		if (this.iFrames>=1 ) {
+			this.iFrames = this.iFrames-1;
+		}
 	
 	}
 
@@ -61,6 +66,7 @@ public class Gondolf {
 		return;
 		}
 		entorno.dibujarImagen(imageDer, x, y, 0, escala);
+		
 	}
 	
 	public double getY() {

@@ -10,11 +10,13 @@ public class DVD {
 	private double factorY;
 	double ancho;
 	double alto;
+	Gondolf mago;
+
 	
 	Entorno entorno;
 	
 	//test	
-	DVD(Entorno e, double xInicial, int factorX){ //factorX determina si su movimiento inicial es izquierda o derecha
+	DVD(Entorno e,Gondolf g, double xInicial, int factorX){ //factorX determina si su movimiento inicial es izquierda o derecha
 		this.x = xInicial; //cambiar a valores random en constructor
 		this.y = 350;
 		this.HP = 2;
@@ -23,11 +25,33 @@ public class DVD {
 		this.entorno = e;
 		this.factorX = 3 * factorX;
 		this.factorY = 2;
+		this.mago = g;
+		
 		
 		
 		this.ancho = 50; //cambiar a variables genericas al opnerle imagen
 		this.alto = 50;
 		
+	}
+	
+	void colisionMago() {
+		if(colisionDVD(this.mago.alto, this.mago.ancho,this.mago.getX(), this.mago.getY())) {
+			if (this.mago.iFrames == 0) {
+				this.mago.HP = this.mago.HP - this.danio;
+				this.mago.iFrames = 150;
+			}
+		}
+				
+	}
+	private boolean colisionDVD(double alto, double ancho, double x, double y) { //valido para todo tipo de enemigo
+		
+		if(getX()+(this.mago.ancho/2)+ancho >= x && //extiende el radio y solo chequea la posicion absoluta del enemigo
+		   getX()-(this.mago.ancho/2)-ancho <= x &&
+		   getY()+(this.mago.alto/2)+alto >= y &&
+		   getY()-(this.mago.alto/2)-alto <= y) {
+				return true;
+		}	
+		return false; //método normalizado
 	}
 
 	

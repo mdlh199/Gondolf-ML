@@ -42,6 +42,7 @@ public class Juego extends InterfaceJuego
 				}
 				if(enemigo[i] != null && enemigo[i].HP !=0) { //si esta vivo, se mueve y lo dibuja
 					enemigo[i].movimiento();
+					enemigo[i].colisionMago();
 					entorno.dibujarRectangulo(enemigo[i].getX(), enemigo[i].getY(), 50, 50, 0, Color.YELLOW);
 				}
 		}
@@ -104,8 +105,8 @@ public class Juego extends InterfaceJuego
 
 		//inicializar enemigos y sus arrays
 			this.dvd = new DVD[2];
-			this.dvd[0] = new DVD(entorno,-50,1);
-			this.dvd[1] = new DVD(entorno,650,-1);
+			this.dvd[0] = new DVD(entorno,gondolf, -50,1);
+			this.dvd[1] = new DVD(entorno,gondolf, 650,-1);
 			
 		//inicializar hechizos
 			this.hechizos = new Hechizos[2];
