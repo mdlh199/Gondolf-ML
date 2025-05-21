@@ -6,10 +6,10 @@ import entorno.Entorno;
 import entorno.Herramientas;
 
 public class Gondolf {
-	private double x;
-	private double y;
+	private double x, y, velocidad;
 	int HP;
 	int Energia;
+	boolean invencible;
 	int iFrames; //frames de invencibilidad
 	
 	Image imagenIzq;
@@ -35,38 +35,37 @@ public class Gondolf {
 		this.alto = imagenIzq.getHeight(null) * this.escala;
 		this.ancho = imagenIzq.getWidth(null) * this.escala;
 		this.direccion = false;
+		this.invencible = false;
 		this.entorno = e;
 		this.menu = m;
+		this.velocidad = 1;
 	}
-	void movimiento() {
-		int n = 5; //velocidad
-		if(entorno.sePresiono('w') || entorno.estaPresionada('w')) {
-			setY(getY()-n);
-		}
-		if(entorno.sePresiono('s') || entorno.estaPresionada('s')) {
-			setY(getY()+n);
-		}
-		if(entorno.sePresiono('a') || entorno.estaPresionada('a')) {
-			setX(getX()-n);
-			this.direccion = false;
-		}
-		if(entorno.sePresiono('d') || entorno.estaPresionada('d')) {
-			setX(getX()+n);
-			this.direccion = true;
-		}
-		if (this.iFrames>=1 ) {
-			this.iFrames = this.iFrames-1;
-		}
 	
+	
+	
+	void moverArriba() {
+		setY(getY()-this.velocidad);
+	}
+	void moverAbajo() {
+		setY(getY()+this.velocidad);
+	}
+	void moverIzquierda() {
+		setX(getX()-this.velocidad);
+		this.direccion = false;
+	}
+	void moverDerecha() {
+		setX(getX()+this.velocidad);
+		this.direccion = true;
 	}
 
 	void dibujarMago() {
-		if (this.direccion == false) {
-		entorno.dibujarImagen(imagenIzq, x, y, 0, escala);
-		return;
+		if(this.invencible == false || entorno.numeroDeTick()%15 == 0 ) {
+			if (this.direccion == false) {
+				entorno.dibujarImagen(imagenIzq, x, y, 0, escala);
+				return;
 		}
-		entorno.dibujarImagen(imageDer, x, y, 0, escala);
-		
+			entorno.dibujarImagen(imageDer, x, y, 0, escala);
+		}
 	}
 	
 	public double getY() {

@@ -36,10 +36,10 @@ public class DVD {
 	
 	void colisionMago() {
 		if(colisionDVD(this.mago.alto, this.mago.ancho,this.mago.getX(), this.mago.getY())) {
-			if (this.mago.iFrames == 0) {
+			
 				this.mago.HP = this.mago.HP - this.danio;
-				this.mago.iFrames = 150;
-			}
+				this.mago.invencible = true;
+			
 		}
 				
 	}

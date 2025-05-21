@@ -19,8 +19,35 @@ public class Juego extends InterfaceJuego
 	private Gondolf gondolf;
 	private Menu menu;
 	private DVD[] dvd;
+	private Murcielago[] murcielago;
 
-
+	void invencibilidad() {
+		if (gondolf.iFrames>=1 && gondolf.invencible == true) {
+			gondolf.iFrames = gondolf.iFrames-1;
+			return;
+		}
+		if(gondolf.iFrames == 0) {
+			gondolf.invencible = false;
+			gondolf.iFrames = 150;
+			return;
+		}
+	}
+	
+	public void movimientoMago(){
+		if(entorno.sePresiono('w') || entorno.estaPresionada('w')) {
+			this.gondolf.moverArriba();
+		}
+		if(entorno.sePresiono('s') || entorno.estaPresionada('s')) {
+			this.gondolf.moverAbajo();
+		}
+		if(entorno.sePresiono('a') || entorno.estaPresionada('a')) {
+			this.gondolf.moverIzquierda();
+		}
+		if(entorno.sePresiono('d') || entorno.estaPresionada('d')) {
+			this.gondolf.moverDerecha();
+		}
+	}
+	
 	public Roca[]crearRocas(){
 		Roca[] r = new Roca[5];
 		r[0] = new Roca(this.entorno,entorno.ancho()/4 , entorno.alto()/4);
@@ -32,6 +59,7 @@ public class Juego extends InterfaceJuego
 	
 	void movimientoyEstadoEnemigos() {
 		estaVivo(this.dvd);
+		estaVivo(this.murcielago);
 		//agregar más enemigos
 	}
 	
@@ -42,9 +70,26 @@ public class Juego extends InterfaceJuego
 				}
 				if(enemigo[i] != null && enemigo[i].HP !=0) { //si esta vivo, se mueve y lo dibuja
 					enemigo[i].movimiento();
-					enemigo[i].colisionMago();
+					if(gondolf.invencible == false) {
+						enemigo[i].colisionMago();
+					}
 					entorno.dibujarRectangulo(enemigo[i].getX(), enemigo[i].getY(), 50, 50, 0, Color.YELLOW);
 				}
+		}
+	}
+	private void estaVivo(Murcielago[] enemigo) { //recibe el objeto para indicar que tipo de enemigo procesa, clonar para el resto de enemigos
+		for(int i = 0; i < enemigo.length ; i++ ){ //recorre todos los dvd
+			if(enemigo[i] != null && enemigo[i].HP == 0) { //si el objeto existe pero su vida es 0, lo nulifica
+				enemigo[i] = null;
+				}
+				if(enemigo[i] != null && enemigo[i].HP !=0) { //si esta vivo, se mueve y lo dibuja
+					enemigo[i].cambiarAngulo(this.gondolf.getX(), this.gondolf.getY());
+					enemigo[i].mover();
+					if(gondolf.invencible == false) {
+						enemigo[i].colisionMago();
+					}
+					entorno.dibujarRectangulo(enemigo[i].getX(), enemigo[i].getY(), 50, 50, 0, Color.PINK);
+				}		
 		}
 	}
 		
@@ -107,6 +152,8 @@ public class Juego extends InterfaceJuego
 			this.dvd = new DVD[2];
 			this.dvd[0] = new DVD(entorno,gondolf, -50,1);
 			this.dvd[1] = new DVD(entorno,gondolf, 650,-1);
+			this.murcielago = new Murcielago [1];
+			this.murcielago[0] = new Murcielago(entorno, gondolf);
 			
 		//inicializar hechizos
 			this.hechizos = new Hechizos[2];
@@ -136,7 +183,8 @@ public class Juego extends InterfaceJuego
 			movimientoyEstadoEnemigos(); //nulifica o continua moviendo a los enemigos
 		
 		//movimiento y colision del mago
-			gondolf.movimiento();
+			movimientoMago();
+			invencibilidad();
 			colisionRocas();
 			
 		//dibujo del entorno (prioridad de layer de menor a mayor)
