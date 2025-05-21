@@ -37,13 +37,13 @@ public class Hechizos {
 //		this.alto = imag.getHeight(null) * escala;
 	}
 	void lanzarHechizo() { //juego llama a este metodo
-		if(entorno.estaPresionado(1) && this.seleccionado == true) {
+		 
 			this.mago.Energia =- this.costo; //consumo la energia/mana
 			this.seleccionado = false;
 			lanzarHechizo(this.dvd);
 			
 			//agregar mas enemigos
-		}
+		
 	}
 	
 	private void lanzarHechizo(DVD[] enemigo) { //clonar para otra clase de enemigo

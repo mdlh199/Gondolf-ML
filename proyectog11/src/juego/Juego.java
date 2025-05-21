@@ -20,6 +20,7 @@ public class Juego extends InterfaceJuego
 	private Menu menu;
 	private DVD[] dvd;
 	private Murcielago[] murcielago;
+	private Boton[] boton;
 
 	void invencibilidad() {
 		if (gondolf.iFrames>=1 && gondolf.invencible == true) {
@@ -31,6 +32,23 @@ public class Juego extends InterfaceJuego
 			gondolf.iFrames = 150;
 			return;
 		}
+	}
+	
+	public boolean hovering() {
+		for(int i = 0; i<boton.length;i++) {
+		if(entorno.mouseX()>= this.boton[i].x-(this.boton[i].ancho/2) &&
+		   entorno.mouseX()<= this.boton[i].x+(this.boton[i].ancho/2) &&
+		   entorno.mouseY()>= this.boton[i].y-(this.boton[i].alto/2) &&
+		   entorno.mouseY()<= this.boton[i].y+(this.boton[i].alto/2)) {
+			//cargar imagen en caso de hover
+			if(entorno.sePresionoBoton(1)) {
+				this.boton[i].seleccionado = true;
+			}
+			return true;
+		}
+		
+	}
+		return false;
 	}
 	
 	public void movimientoMago(){
