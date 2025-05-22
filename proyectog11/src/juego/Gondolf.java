@@ -12,32 +12,39 @@ public class Gondolf {
 	boolean invencible;
 	int iFrames; //frames de invencibilidad
 	
-	Image imagenIzq;
-	Image imageDer;
+	Image imageArr; //0
+	Image imageAba; //1
+	Image imageIzq; //2
+	Image imageDer; //3
+	int direccion;
+	
 	double alto;
 	double ancho;
 	double escala;
-	boolean direccion; 
+	 
 	
 	Menu menu;
 	Entorno entorno;
 	//Agregar demas variables
 	
 	public Gondolf (Entorno e, Menu m) {
-		this.setX(e.ancho()/2); // cambiar a mitad de pantalla luego de agregar el hud
-		this.setY(e.alto()/2); //AGREGAR Y TOMAR EN CUENTA EL TAMAÑO DEL MENU
+		this.entorno = e;
+		this.menu = m;
+		this.setX((e.ancho()-m.ancho)/2); // cambiar a mitad de pantalla luego de agregar el hud
+		this.setY((e.alto())-m.alto/2); //AGREGAR Y TOMAR EN CUENTA EL TAMAÑO DEL MENU
 		this.HP = 100;
 		this.Energia = 100;
 		this.iFrames = 0;
-		this.escala = 0.15;
-		this.imagenIzq = Herramientas.cargarImagen("magoIzq.png");
-		this.imageDer = Herramientas.cargarImagen("magoDer.png");
-		this.alto = imagenIzq.getHeight(null) * this.escala;
-		this.ancho = imagenIzq.getWidth(null) * this.escala;
-		this.direccion = false;
+		this.escala = 0.10;
+		this.imageIzq = Herramientas.cargarImagen("imagenesJuego/magoIzq.png");
+		this.imageDer = Herramientas.cargarImagen("imagenesJuego/magoDer.png");
+		this.imageAba = Herramientas.cargarImagen("imagenesJuego/magoAba.png");
+		this.imageArr = Herramientas.cargarImagen("imagenesJuego/magoArr.png");
+		this.alto = imageIzq.getHeight(null) * this.escala;
+		this.ancho = imageIzq.getWidth(null) * this.escala;
+		this.direccion = 1;
 		this.invencible = false;
-		this.entorno = e;
-		this.menu = m;
+
 		this.velocidad = 1;
 	}
 	
@@ -45,29 +52,39 @@ public class Gondolf {
 	
 	void moverArriba() {
 		setY(getY()-this.velocidad);
+		this.direccion = 0;
 	}
 	void moverAbajo() {
 		setY(getY()+this.velocidad);
+		this.direccion = 1;
 	}
 	void moverIzquierda() {
 		setX(getX()-this.velocidad);
-		this.direccion = false;
+		this.direccion = 2;
 	}
 	void moverDerecha() {
 		setX(getX()+this.velocidad);
-		this.direccion = true;
+		this.direccion = 3;
 	}
 
 	void dibujarMago() {
-		if(this.invencible == false || entorno.numeroDeTick()%15 == 0 ) {
-			if (this.direccion == false) {
-				entorno.dibujarImagen(imagenIzq, x, y, 0, escala);
+		if(this.invencible == false || entorno.numeroDeTick()%3 == 0 ) {
+			if (this.direccion == 0) {
+				entorno.dibujarImagen(this.imageArr, x, y, 0, escala);
 				return;
 		}
-			entorno.dibujarImagen(imageDer, x, y, 0, escala);
+		if(this.direccion == 1)	{
+			entorno.dibujarImagen(imageAba, x, y, 0, escala);
+			return;
 		}
+		if(this.direccion == 2) {
+			entorno.dibujarImagen(imageIzq, x, y, 0, escala);
+			return;
+		}
+		entorno.dibujarImagen(imageDer, x, y, 0, escala);
+		return;
 	}
-	
+	}
 	public double getY() {
 		return y;
 	}

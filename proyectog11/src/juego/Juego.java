@@ -16,8 +16,8 @@ public class Juego extends InterfaceJuego
 	// ...
 	private Roca[] rocas;
 	private Hechizos[] hechizos;
-	private Gondolf gondolf;
-	private Menu menu;
+	Gondolf gondolf;
+	Menu menu;
 	private DVD[] dvd;
 	private Murcielago[] murcielago;
 	private Boton[] boton;
@@ -68,10 +68,11 @@ public class Juego extends InterfaceJuego
 	
 	public Roca[]crearRocas(){
 		Roca[] r = new Roca[5];
-		r[0] = new Roca(this.entorno,entorno.ancho()/4 , entorno.alto()/4);
-		r[1] = new Roca(this.entorno,entorno.ancho()-entorno.ancho()/4 , entorno.alto()/4);
-		r[2] = new Roca(this.entorno,entorno.ancho()/4,entorno.alto()-entorno.alto()/4);
-		r[3] = new Roca(this.entorno,entorno.ancho()-entorno.ancho()/4,entorno.alto()-entorno.alto()/4);
+		double n = (entorno.ancho()-this.menu.ancho);
+		r[0] = new Roca(this.entorno,n/4  , entorno.alto()/4);
+		r[1] = new Roca(this.entorno,n-n/4 , entorno.alto()/4);
+		r[2] = new Roca(this.entorno,n/4,entorno.alto()-entorno.alto()/4);
+		r[3] = new Roca(this.entorno,n-n/4,entorno.alto()-entorno.alto()/4);
 		return r;
 	}
 	
@@ -106,46 +107,51 @@ public class Juego extends InterfaceJuego
 					if(gondolf.invencible == false) {
 						enemigo[i].colisionMago();
 					}
-					entorno.dibujarRectangulo(enemigo[i].getX(), enemigo[i].getY(), 50, 50, 0, Color.PINK);
+					enemigo[i].dibujarMurcielago();;
 				}		
 		}
 	}
 		
  	private void dibujarRocas() {
 		for (int i=0 ; i<rocas.length-1 ; i++) {
-			entorno.dibujarRectangulo(this.rocas[i].getX(), this.rocas[i].getY(), 50, 50, 0, Color.red);
+			entorno.dibujarImagen(this.rocas[i].imagen, this.rocas[i].getX(), this.rocas[i].getY(), 0,this.rocas[i].escala );
 		}
 	}
 		
 	void colisionRocas() {
+		double n = 7.5; //control de las esquinas, + alto = esquinas + permisivas
 		for(int i = 0; i < rocas.length-1 ; i++) {
-			if(this.gondolf.getX()+25 >= rocas[i].getX()-25 && 
-				this.gondolf.getX()-25 <= rocas[i].getX()+25 &&	
-				this.gondolf.getY()+25 >= rocas[i].getY()-25 &&
-				this.gondolf.getY()-25 <= rocas[i].getY()+25) { //Confirmo estar dentro de una piedra
+			if(this.gondolf.getX()+this.gondolf.ancho/2 >= rocas[i].getX()-this.rocas[i].ancho/2 && 
+				this.gondolf.getX()-this.gondolf.ancho/2 <= rocas[i].getX()+this.rocas[i].ancho/2 &&	
+				this.gondolf.getY()+this.gondolf.alto/2 >= rocas[i].getY()-this.rocas[i].alto/2 &&
+				this.gondolf.getY()-this.gondolf.alto/2 <= rocas[i].getY()+this.rocas[i].alto/2) { //Confirmo estar dentro de una piedra
 					
-				if(this.gondolf.getX()+25 <= rocas[i].getX()+25 &&
-					this.gondolf.getY()+25 >= rocas[i].getY()-15 &&
-					this.gondolf.getY()-25 <= rocas[i].getY()+15) {
-						this.gondolf.setX(rocas[i].getX()-50); //choco la piedra desde la izquierda
-					}
+				if(this.gondolf.getX()+this.gondolf.ancho/2 <= rocas[i].getX()+this.rocas[i].ancho/2 &&
+					this.gondolf.getY()+this.gondolf.alto/2 >= (rocas[i].getY()-this.rocas[i].alto/2)+n &&
+					this.gondolf.getY()-this.gondolf.alto/2 <= (rocas[i].getY()+this.rocas[i].alto/2)-n) {
+						this.gondolf.setX(rocas[i].getX()-this.rocas[i].ancho); //choco la piedra desde la izquierda
+						return;
+				}
 				
-				if(this.gondolf.getX()-25 >= rocas[i].getX()-25 &&
-						this.gondolf.getY()+25 >= rocas[i].getY()-15 &&
-						this.gondolf.getY()-25 <= rocas[i].getY()+15) {
-							this.gondolf.setX(rocas[i].getX()+50); //choco la piedra desde la derecha
-						}
-				if(this.gondolf.getY()-25 >= rocas[i].getY()-25 &&
-						this.gondolf.getX()+25 >= rocas[i].getX()-15 &&
-						this.gondolf.getX()-25 <= rocas[i].getX()+15) {
-							this.gondolf.setY(rocas[i].getY()+50); //choco la piedra desde abajo
-						}
+				if(this.gondolf.getX()-this.gondolf.ancho/2 >= rocas[i].getX()-this.rocas[i].ancho/2 &&
+						this.gondolf.getY()+this.gondolf.alto/2 >= (rocas[i].getY()-this.rocas[i].alto/2)+n &&
+						this.gondolf.getY()-this.gondolf.alto/2 <= (rocas[i].getY()+this.rocas[i].alto/2)-n) {
+							this.gondolf.setX(rocas[i].getX()+this.rocas[i].ancho); //choco la piedra desde la derecha
+							return;
+				}
+				if(this.gondolf.getY()-this.gondolf.alto/2 >= rocas[i].getY()-this.rocas[i].alto/2 &&
+						this.gondolf.getX()+this.gondolf.ancho/2 >= (rocas[i].getX()-this.rocas[i].ancho/2)+n &&
+						this.gondolf.getX()-this.gondolf.ancho/2 <= (rocas[i].getX()+this.rocas[i].ancho/2)-n) {
+							this.gondolf.setY(rocas[i].getY()+this.rocas[i].alto); //choco la piedra desde abajo
+							return;
+				}
 				
-				if(this.gondolf.getY()+25 <= rocas[i].getY()+25 &&
-						this.gondolf.getX()+25 >= rocas[i].getX()-15 &&
-						this.gondolf.getX()-25 <= rocas[i].getX()+15) {
-							this.gondolf.setY(rocas[i].getY()-50); //choco la piedra desde arriba
-						}
+				if(this.gondolf.getY()+this.gondolf.alto/2 <= rocas[i].getY()+this.rocas[i].alto/2 &&
+						this.gondolf.getX()+this.gondolf.ancho/2 >= (rocas[i].getX()-this.rocas[i].ancho/2)+n &&
+						this.gondolf.getX()-this.gondolf.ancho/2 <= (rocas[i].getX()+this.rocas[i].ancho/2)-n) {
+							this.gondolf.setY(rocas[i].getY()-this.rocas[i].alto); //choco la piedra desde arriba
+							return;
+				}
 			}
 		}
 	}
@@ -162,8 +168,10 @@ public class Juego extends InterfaceJuego
 		
 		// Inicializar lo que haga falta para el juego
 		// ...
-				
-			this.rocas = crearRocas(); //RESPETAR EL ORDEN DE INICIALIZACION
+			
+			 //RESPETAR EL ORDEN DE INICIALIZACION
+			this.menu = new Menu(this.entorno,this.gondolf);
+			this.rocas = crearRocas();
 			this.gondolf = new Gondolf(entorno, menu); //SI NO SE ROMPE EL PROGRAMA XD
 
 		//inicializar enemigos y sus arrays
@@ -178,8 +186,7 @@ public class Juego extends InterfaceJuego
 			this.hechizos[0] = new Hechizos(entorno, this.gondolf, null, 0, 0, 50, dvd);	
 			
 		//inicializo el menu	
-			this.menu = new Menu(hechizos,this.entorno,this.gondolf);
-			
+			this.menu.mago = this.gondolf;
 		// Inicia el juego!
 		this.entorno.iniciar();
 	}
@@ -197,7 +204,7 @@ public class Juego extends InterfaceJuego
 				
 			posicionMouse(); 
 		//calculo de enemigos y hechizos
-			this.hechizos[0].lanzarHechizo();
+			
 			movimientoyEstadoEnemigos(); //nulifica o continua moviendo a los enemigos
 		
 		//movimiento y colision del mago
@@ -208,8 +215,8 @@ public class Juego extends InterfaceJuego
 		//dibujo del entorno (prioridad de layer de menor a mayor)
 			dibujarRocas();
 			gondolf.dibujarMago();					
-			entorno.dibujarRectangulo(700, 300, 200, 600, 0, Color.magenta); //placeholder del menu
-			menu.dibujarHpEnergia();
+			menu.dibujarMenu(); //placeholder del menu
+			
 	}
 	
 

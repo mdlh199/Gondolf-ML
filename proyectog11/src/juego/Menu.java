@@ -10,39 +10,35 @@ import entorno.Herramientas;
 public class Menu {
 	double x,y;
 	Gondolf mago;
-	Hechizos[] hechizos; 
 	int enemigosMuertos;
 	int enemigosRestantes;
 	Entorno entorno;
 	Image imagen;
 	double ancho, alto, escala;
 	
-	public Menu (Hechizos[] hechizo, Entorno e, Gondolf g) {
+	public Menu (Entorno e, Gondolf g) {
 		this.enemigosMuertos = 0;
 		this.enemigosRestantes = 50;
-		this.hechizos = hechizo;
+
 		this.entorno = e;
 		this.mago = g;
-		
-//		this.imagen = Herramientas.cargarImagen("MenuMadera.png");
-//		this.alto = imagen.getHeight(null) * this.escala;
-//		this.ancho = imagen.getWidth(null) * this.escala;
-		this.escala = 1.7;
+			
+		this.imagen = Herramientas.cargarImagen("imagenesJuego/MenuJuego.png");
+		this.escala = 1.0;
+		this.alto = imagen.getHeight(null) * this.escala;
+		this.ancho = imagen.getWidth(null) * this.escala;
 
+		this.x = entorno.ancho()-this.ancho/2;
+		this.y = entorno.alto()/2;
 	}
 	
 	
 	public void dibujarMenu() {
-		//entorno.dibujarImagen(this.imagen, entorno.ancho()-entorno.alto()/8.7, entorno.alto()/2, 0,this.escala);
+		entorno.cambiarFont("Arial", 18, Color.white);
+		entorno.dibujarImagen(this.imagen, this.x, this.y, 0,this.escala);
+		entorno.escribirTexto("" + this.mago.HP, 700, 370);
+		entorno.escribirTexto("" + this.mago.Energia, 700, 430);
 	}
 	
-	public void dibujarHpEnergia() {
-		entorno.cambiarFont("Arial", 18, Color.white); 
-		entorno.escribirTexto("" + this.mago.HP, 660, 420);
-		entorno.escribirTexto("" + this.mago.Energia, 660, 450);
-		//AGREGAR LA BARRA DE VIDA
-	}
-	
-
 	
 }

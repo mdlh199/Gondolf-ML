@@ -19,10 +19,11 @@ public class Roca {
 		this.y = posY;
 		this.entorno = e;
 		
-		//this.imagen = Herramientas.cargarImagen(null);
-		//this.ancho = imagen.getWidth(null) * escala;
-		//this.alto = imagen.getHeight(null) * escala;
-		this.escala = 1.0;
+		this.escala = 0.10;
+		this.imagen = Herramientas.cargarImagen("imagenesJuego/piedraSprite.png");
+		this.ancho = imagen.getWidth(null) * escala;
+		this.alto = imagen.getHeight(null) * escala;
+		
 
 	}
 	

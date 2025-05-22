@@ -8,7 +8,6 @@ public class Hechizos {
 	int danio;
 	int costo;
 	double radio;
-	boolean seleccionado;
 	Gondolf mago;
 	
 	DVD[] dvd;
@@ -28,8 +27,6 @@ public class Hechizos {
 		this.entorno = e;
 		this.dvd = d;
 		this.mago = g;
-
-		this.seleccionado = false;
 		
 //		this.imag = imag;							//agregar imag y escala al constructor
 //		this.escala = escala;
@@ -39,7 +36,6 @@ public class Hechizos {
 	void lanzarHechizo() { //juego llama a este metodo
 		 
 			this.mago.Energia =- this.costo; //consumo la energia/mana
-			this.seleccionado = false;
 			lanzarHechizo(this.dvd);
 			
 			//agregar mas enemigos

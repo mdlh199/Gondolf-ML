@@ -17,19 +17,28 @@ public class Murcielago {
 	double angulo;
 	Gondolf mago;
 	
+	Entorno entorno;
+	
 	public Murcielago(Entorno e, Gondolf g) {
 		this.x = 650;
 		this.y = -50;
 		this.HP = 1;
 		this.danio = 10;
 		this.mago = g;
-		//this.imagen = Herramientas.cargarImagen("");
-		//this.alto = imagen.getHeight(null) * escala;
-		//this.ancho = imagen.getWidth(null) * escala;
-		this.escala = 1.0;
+		this.escala = 0.6;
+		this.imagen = Herramientas.cargarImagen("imagenesJuego/murcielago.gif");
+		this.alto = imagen.getHeight(null) * escala;
+		this.ancho = imagen.getWidth(null) * escala;
+		this.entorno = e;
 		this.angulo = 0;
-		this.velocidad = 3;
+		this.velocidad = 1.5;
 	}
+	
+	void dibujarMurcielago() {
+		entorno.dibujarImagen(imagen, x, y, 0, escala);
+	}
+	
+	
 	public double getX() {
 		return x;
 	}
@@ -61,10 +70,10 @@ public class Murcielago {
 	}
 	private boolean colisionMurcielago(double alto, double ancho, double x, double y) { //valido para todo tipo de enemigo
 		
-		if(getX()+(this.mago.ancho/2)+ancho >= x && //extiende el radio y solo chequea la posicion absoluta del enemigo
-		   getX()-(this.mago.ancho/2)-ancho <= x &&
-		   getY()+(this.mago.alto/2)+alto >= y &&
-		   getY()-(this.mago.alto/2)-alto <= y) {
+		if(getX()+(this.mago.ancho/2)+ancho/2 >= x && //extiende el radio y solo chequea la posicion absoluta del enemigo
+		   getX()-(this.mago.ancho/2)-ancho/2 <= x &&
+		   getY()+(this.mago.alto/2)+alto/2 >= y &&
+		   getY()-(this.mago.alto/2)-alto/2 <= y) {
 				return true;
 		}	
 		return false; //método normalizado
