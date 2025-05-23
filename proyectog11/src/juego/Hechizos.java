@@ -2,41 +2,59 @@ package juego;
 
 import java.awt.Image;
 import entorno.Entorno;
+import entorno.Herramientas;
 
 public class Hechizos {
 	String nombre;
 	int danio;
 	int costo;
 	double radio;
+	double posX, posY;
 	Gondolf mago;
 	
-	DVD[] dvd;
+	private int temporizador;
+	int tempAux;
+	boolean activo;
 	
-//	Image imag;
-//	double ancho;
-//	double alto;
-//	double escala;
+	DVD[] dvd;
+	Murcielago[] murcielago;
+	
+	Image imag;
+	double ancho,alto,escala;
 	Entorno entorno;
 
 
-	Hechizos(Entorno e,Gondolf g, String nombre, int danio, int costo,double radio,DVD[] d){
-		this.nombre = nombre;
+	Hechizos(Entorno e,Gondolf g, String imagen, double escala,int temp, int danio, int costo,double radio,DVD[] d,Murcielago[]mur){
 		this.danio = danio;
 		this.costo = costo;
 		this.radio = radio;
 		this.entorno = e;
 		this.dvd = d;
+		this.murcielago = mur;
 		this.mago = g;
+		this.temporizador = temp;
+		this.tempAux = this.temporizador;
 		
-//		this.imag = imag;							//agregar imag y escala al constructor
-//		this.escala = escala;
-//		this.ancho = imag.getWidth(null) * escala;
-//		this.alto = imag.getHeight(null) * escala;
+		this.imag = Herramientas.cargarImagen(imagen);							//agregar imag y escala al constructor
+		this.escala = escala;
+		this.ancho = imag.getWidth(null) * escala;
+		this.alto = imag.getHeight(null) * escala;
 	}
+	
+	void dibujarHechizo() {
+		entorno.dibujarImagen(imag, posX, posY, 0, this.escala);
+	}
+	
 	void lanzarHechizo() { //juego llama a este metodo
-		 
-			this.mago.Energia =- this.costo; //consumo la energia/mana
+		 if(this.mago.getEnergia() >= this.costo) {
+			this.mago.setEnergia(this.mago.getEnergia() -this.costo); //consumo la energia/mana
+			this.activo = true;
+			this.tempAux = this.temporizador;
 			lanzarHechizo(this.dvd);
+			lanzarHechizo(this.murcielago);
+			
+		 }
+		 return;
 			
 			//agregar mas enemigos
 		
@@ -45,14 +63,21 @@ public class Hechizos {
 	private void lanzarHechizo(DVD[] enemigo) { //clonar para otra clase de enemigo
 		
 			for(int i = 0; i < enemigo.length ; i++ ) {			
-				if(colision(enemigo[i].alto, enemigo[i].ancho, enemigo[i].getX(), enemigo[i].getY())) { 
+				if(enemigo[i] != null && colision(enemigo[i].alto, enemigo[i].ancho, enemigo[i].getX(), enemigo[i].getY())) { 
 					enemigo[i].HP = enemigo[i].HP - this.danio; 
-					System.out.println("wack");
-					
 				}
 			}		
 		
 	}
+	private void lanzarHechizo(Murcielago[] enemigo) { //clonar para otra clase de enemigo
+		
+		for(int i = 0; i < enemigo.length ; i++ ) {			
+			if(enemigo[i] != null && colision(enemigo[i].alto, enemigo[i].ancho, enemigo[i].getX(), enemigo[i].getY())) { 
+				enemigo[i].HP = enemigo[i].HP - this.danio; 				
+			}
+		}		
+	
+}
 	
 	boolean colision(double alto, double ancho, double x, double y) { //valido para todo tipo de enemigo
 			

@@ -7,8 +7,8 @@ import entorno.Herramientas;
 
 public class Gondolf {
 	private double x, y, velocidad;
-	int HP;
-	int Energia;
+	private int HP;
+	private int Energia;
 	boolean invencible;
 	int iFrames; //frames de invencibilidad
 	
@@ -50,6 +50,36 @@ public class Gondolf {
 	
 	
 	
+	public int getHP() {
+		return HP;
+	}
+
+	public void setHP(int hP) {
+		this.HP = hP;
+		if(HP<0) {
+			this.HP = 0;
+			return;
+		}
+		if(HP>100) {
+			this.HP = 100;
+			return;
+		}
+	}
+
+
+
+	public int getEnergia() {
+		return Energia;
+	}
+	public void setEnergia(int energia) {
+		Energia = energia;
+		if(this.Energia>100) {
+			Energia = 100;
+		}	
+	}
+
+
+
 	void moverArriba() {
 		setY(getY()-this.velocidad);
 		this.direccion = 0;

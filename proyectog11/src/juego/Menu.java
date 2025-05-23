@@ -10,8 +10,7 @@ import entorno.Herramientas;
 public class Menu {
 	double x,y;
 	Gondolf mago;
-	int enemigosMuertos;
-	int enemigosRestantes;
+	int enemigosMuertos, enemigosRestantes, oleada;
 	Entorno entorno;
 	Image imagen;
 	double ancho, alto, escala;
@@ -19,7 +18,8 @@ public class Menu {
 	public Menu (Entorno e, Gondolf g) {
 		this.enemigosMuertos = 0;
 		this.enemigosRestantes = 50;
-
+		this.oleada = 1;
+		
 		this.entorno = e;
 		this.mago = g;
 			
@@ -36,8 +36,11 @@ public class Menu {
 	public void dibujarMenu() {
 		entorno.cambiarFont("Arial", 18, Color.white);
 		entorno.dibujarImagen(this.imagen, this.x, this.y, 0,this.escala);
-		entorno.escribirTexto("" + this.mago.HP, 700, 370);
-		entorno.escribirTexto("" + this.mago.Energia, 700, 430);
+		entorno.escribirTexto("" + this.mago.getHP(), 700, 370);
+		entorno.escribirTexto("" + this.mago.getEnergia(), 700, 430);
+		entorno.escribirTexto("" + this.enemigosMuertos, 760, 562);
+		entorno.escribirTexto("" + 3, 667.5, 562); //copa
+		entorno.escribirTexto("" + this.oleada, 715, 507.5); //oleada
 	}
 	
 	
