@@ -33,6 +33,11 @@ public class Trofeo {
 	void dibujarTrofeo() {
 		entorno.dibujarImagen(imagen, x, y, 0, escala);
 	}
+	public void setEscala(double n) {
+		if(this.escala<0.5) {
+			this.escala = n;
+		}
+	}
 
 	public double getX() {
 		return x;
@@ -45,8 +50,26 @@ public class Trofeo {
 	public void setY(double y) {
 		if(this.y < (entorno.alto()-this.alto)/2) {
 			this.y = y;
+			return;
 		}
+		colisionMago();
 		
+	}
+	void colisionMago() {
+		if(colisionTrofeo(this.mago.alto, this.mago.ancho,this.mago.getX(), this.mago.getY())) {			
+				this.obtenido = true;
+		}
+				
+	}
+	private boolean colisionTrofeo(double alto, double ancho, double x, double y) { //valido para todo tipo de enemigo
+		
+		if(getX()+(this.ancho/2)+ancho/2 >= x && //extiende el radio y solo chequea la posicion absoluta del enemigo
+		   getX()-(this.ancho/2)-ancho/2 <= x &&
+		   getY()+(this.alto/2)+alto/2 >= y &&
+		   getY()-(this.alto/2)-alto/2 <= y) {
+				return true;
+		}	
+		return false; //método normalizado
 	}
 	
 }

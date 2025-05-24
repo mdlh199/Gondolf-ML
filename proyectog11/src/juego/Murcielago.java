@@ -21,20 +21,20 @@ public class Murcielago {
 	
 	Entorno entorno;
 	
-	public Murcielago(Entorno e, Gondolf g, double[] pos) {
+	public Murcielago(Entorno e, Gondolf g, double[] pos, double diff) {
 		this.x = pos[0];
 		this.y = pos[1];
 		this.HP = 1;
 		this.danio = 10;
 		this.mago = g;
-		this.escala = 0.1;
+		this.escala = 0.1 * diff;
 		this.imagenIzq = Herramientas.cargarImagen("imagenesJuego/murcielagoIzquierda.gif");
 		this.imagenDer = Herramientas.cargarImagen("imagenesJuego/murcielagoDerecha.gif");
 		this.alto = imagenIzq.getHeight(null) * escala;
 		this.ancho = imagenIzq.getWidth(null) * escala;
 		this.entorno = e;
 		this.angulo = 0;
-		this.velocidad = 1.1;
+		this.velocidad = 1.1 * diff;
 	}
 	
 	void dibujarMurcielago() {

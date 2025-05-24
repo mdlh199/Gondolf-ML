@@ -31,6 +31,7 @@ public class Juego extends InterfaceJuego
 	private int oleada;
 	private boolean victoria;
 	
+	private double dificultad;
 	private int bolasDeFuegoEnPantalla;
 	private int pocionesEnPantalla;
 	private int enemigosEnPantalla;
@@ -39,7 +40,8 @@ public class Juego extends InterfaceJuego
 	void estadoPocion() {
 		for(int i =0; i<this.pocionVida.length;i++) {
 			if(pocionVida[i] != null && pocionVida[i].consumido == true || this.victoria == true) { //si el objeto existe pero su vida es 0, lo nulifica							
-					pocionVida[i] = null;
+					pocionVida[i] = null; 
+					this.pocionesEnPantalla--;
 					}
 					if(pocionVida[i] != null && pocionVida[i].consumido != true) { //si esta vivo, se mueve y lo dibuja				
 						pocionVida[i].colisionMago();					
@@ -49,6 +51,7 @@ public class Juego extends InterfaceJuego
 		for(int i =0; i<this.pocionEnergia.length;i++) {
 			if(pocionEnergia[i] != null && pocionEnergia[i].consumido == true || this.victoria == true) { //si el objeto existe pero su vida es 0, lo nulifica							
 					pocionEnergia[i] = null;
+					this.pocionesEnPantalla--;
 					}
 					if(pocionEnergia[i] != null && pocionEnergia[i].consumido != true) { //si esta vivo, se mueve y lo dibuja				
 						pocionEnergia[i].colisionMago();					
@@ -68,7 +71,7 @@ public class Juego extends InterfaceJuego
 				}
 			}
 		}
-		for(int i = 0 ; i<this.pocionEnergia.length; i++) {
+		for(int i = 0 ;pocionesEnPantalla<5 && i<this.pocionEnergia.length; i++) {
 			if(this.pocionEnergia[i] == null) {
 				this.pocionEnergia[i] = new PocionEnergia(entorno,gondolf,posX,posY);
 				pocionesEnPantalla++;
@@ -93,13 +96,14 @@ public class Juego extends InterfaceJuego
 		for(int i = 0;  i<boton.length;i++) {
 		
 		if(entorno.sePresionoBoton(1) && this.boton[i].seleccionado == true) { //lanzamiento de hechizo
+			if(this.gondolf.getEnergia() >= this.boton[i].hechizo.costo) {
 			this.boton[i].lanzarHechizo();
 			for(int k = 0; k<this.explosion.length ; k++) {
 				if(this.explosion[k] == null) { //creo un objeto que dibuja el hechizo 
 					this.explosion[k] = new Explosion(entorno,this.boton[i].hechizo.posX,this.boton[i].hechizo.posY, this.boton[i].hechizo.tempAux, this.boton[i].hechizo.imag, this.boton[i].hechizo.escala);
 					break;
 					
-				}}}
+				}}}}
 			
 		this.boton[i].dibujarBoton(); //dibujo los botones	
 				
@@ -207,7 +211,7 @@ public class Juego extends InterfaceJuego
 				
 				if(this.victoria == false) { //si la condicion de victoria no se cumplió, sumo 1 al contador del menu e intento generar una poción
 					this.menu.enemigosMuertos++;
-					if(Math.random()>=0.85) {
+					if(Math.random()>=0.9) {
 						generarPocion(enemigo[i].getX(),enemigo[i].getY());
 						}
 					}
@@ -274,11 +278,20 @@ public class Juego extends InterfaceJuego
 		if(this.enemigosEnPantalla<10 && this.ultimoCreado == 0) { 
 			for(int i = 0; i<this.murcielago.length ; i++) { //recorre mi array de 10 murcielagos y si encuentra una
 				if(this.murcielago[i] == null) { //posición libre, crea el murcielago ahí
-					this.murcielago[i] = new Murcielago(this.entorno,this.gondolf,posicionMurcielago());
+					this.murcielago[i] = new Murcielago(this.entorno,this.gondolf,posicionMurcielago(), this.dificultad);
 					setUltimoCreado(); //inicia un timer de aprox 2 segundos para crear el próximo
 					break;
 				}
 			}
+			return;
+		}
+		if(Math.random()>=0.9995 || entorno.sePresiono('4') ) {
+			for(int i = 0; i<this.murcielago.length ; i++) { //recorre mi array de 10 murcielagos y si encuentra una
+				if(this.murcielago[i] == null) { //posición libre, crea el murcielago ahí
+					this.murcielago[i] = new Murcielago(this.entorno,this.gondolf,posicionMurcielago(),this.dificultad);
+				}
+			}
+			setUltimoCreado();
 		}
 	}
 	private double[] posicionMurcielago() { //r[0] = x, r[1] = y
@@ -305,7 +318,7 @@ public class Juego extends InterfaceJuego
 	}
 	
 	void crearbolasDeFuego() { //algoritmo que crea una pared de 5 bolas de fuego
-		if(this.bolasDeFuegoEnPantalla<15 && Math.random()>=0.999) {
+		if(this.bolasDeFuegoEnPantalla<15 && Math.random()>=0.992) {
 			
 			int cont = 0; //siempre se crean 5 bolas de fuego
 			double k = Math.random(); //valor constante dentro del algoritmo que decide desde que lado viene la pared
@@ -354,7 +367,15 @@ public class Juego extends InterfaceJuego
 	}
 	
 	void setUltimoCreado() { //tiempo de espera para crear un nuevo enemigo
+		if(this.oleada == 1) {
 		this.ultimoCreado = 250;
+		}
+		if(this.oleada == 2) {
+			this.ultimoCreado = 175;
+		}
+		if(this.oleada == 3) {
+			this.ultimoCreado = 50;
+		}
 	}
 	void tickUltimoCreado() { //temporizador por tick, se detiene en 0
 		if(this.ultimoCreado>0) {
@@ -374,6 +395,7 @@ public class Juego extends InterfaceJuego
 			 //RESPETAR EL ORDEN DE INICIALIZACION
 			this.oleada = 1;
 			this.pocionesEnPantalla = 0;
+			this.dificultad = 1;
 			this.menu = new Menu(this.entorno,this.gondolf);
 			this.rocas = crearRocas();
 			this.gondolf = new Gondolf(entorno, menu); //SI NO SE ROMPE EL PROGRAMA XD
@@ -386,7 +408,7 @@ public class Juego extends InterfaceJuego
 			this.dvd = new DVD[2];
 			this.bolasDeFuego = new bolaDeFuego[15];
 			this.bolasDeFuegoEnPantalla = 0;
-			this.murcielago = new Murcielago [10];
+			this.murcielago = new Murcielago [20];
 			
 			
 		//inicializar hechizos y botones
@@ -416,18 +438,20 @@ public class Juego extends InterfaceJuego
 	{
 		// Procesamiento de un instante de tiempo
 		// ...
-		if(this.menu.enemigosMuertos>=2 && this.oleada==1) {
+		if(this.menu.enemigosMuertos>=10 && this.oleada==1 || entorno.sePresiono('2')) {
 			this.oleada = 2;
 			this.menu.oleada = 2;
+			this.dificultad= 1.2;
 			this.dvd[0] = new DVD(entorno,gondolf, -50,1, 0, 1.3);
 			this.dvd[1] = new DVD(entorno,gondolf, 650,-1, 1, 0.7);
 			this.enemigosEnPantalla = this.enemigosEnPantalla+2;
 		}
-		if(this.menu.enemigosMuertos>=3 && this.oleada == 2) {
+		if(this.menu.enemigosMuertos>=25 && this.oleada == 2 || entorno.sePresiono('3') ) {
 			this.oleada = 3;
 			this.menu.oleada = 3;
+			this.dificultad= 1.4;
 		}
-		if(this.menu.enemigosMuertos>=4 && this.oleada == 3) {
+		if(this.menu.enemigosMuertos>=75 && this.oleada == 3 ) {
 			this.victoria = true;
 		}
 			
@@ -451,16 +475,25 @@ public class Juego extends InterfaceJuego
 			colisionRocas();
 			
 		//dibujo del entorno (prioridad de layer de menor a mayor)
-			if(victoria== true) {
-				trofeo.setY(trofeo.getY()+1);
-				trofeo.dibujarTrofeo();
-			}		
+					
 			dibujarRocas();
 			gondolf.dibujarMago();					
 			menu.dibujarMenu(); 
 			controlBotones();
 			
+			if(victoria == true) {
+				trofeo.setY(trofeo.getY()+1);
+				trofeo.dibujarTrofeo();
+				if(trofeo.obtenido == true) {
+					trofeo.setEscala(trofeo.escala+0.001);
+				}
+			}
+			
 			dibujarHechizos();
+			if(entorno.sePresiono('v')){
+				this.oleada = 3;
+				this.victoria = true;
+			}
 	}
 	
 

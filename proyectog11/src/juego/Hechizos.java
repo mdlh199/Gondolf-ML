@@ -13,7 +13,7 @@ public class Hechizos {
 	
 	private int temporizador;
 	int tempAux;
-	boolean activo;
+	
 	
 	DVD[] dvd;
 	Murcielago[] murcielago;
@@ -41,14 +41,14 @@ public class Hechizos {
 	
 	
 	void lanzarHechizo() { //juego llama a este metodo
-		 if(this.mago.getEnergia() >= this.costo) {
+		
 			this.mago.setEnergia(this.mago.getEnergia() -this.costo); //consumo la energia/mana
-			this.activo = true;
+
 			this.tempAux = this.temporizador;
 			lanzarHechizo(this.dvd);
 			lanzarHechizo(this.murcielago);			
-		 }
-		 return;		
+		 
+			return;		
 			//agregar mas enemigos si fuera necesario
 		
 	}

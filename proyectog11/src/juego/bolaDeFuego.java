@@ -27,7 +27,7 @@ public class bolaDeFuego {
 		this.entorno = e;
 		this.mago = g;
 		this.danio = 5;
-		this.velocidad = 1.0;
+		this.velocidad = 1.5;
 
 		
 		this.escala = 0.10;
