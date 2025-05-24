@@ -5,7 +5,6 @@ import entorno.Entorno;
 import entorno.Herramientas;
 
 public class Hechizos {
-	String nombre;
 	int danio;
 	int costo;
 	double radio;
@@ -19,7 +18,7 @@ public class Hechizos {
 	DVD[] dvd;
 	Murcielago[] murcielago;
 	
-	Image imag;
+	String imag;
 	double ancho,alto,escala;
 	Entorno entorno;
 
@@ -35,15 +34,11 @@ public class Hechizos {
 		this.temporizador = temp;
 		this.tempAux = this.temporizador;
 		
-		this.imag = Herramientas.cargarImagen(imagen);							//agregar imag y escala al constructor
+		this.imag = imagen;		
 		this.escala = escala;
-		this.ancho = imag.getWidth(null) * escala;
-		this.alto = imag.getHeight(null) * escala;
+
 	}
 	
-	void dibujarHechizo() {
-		entorno.dibujarImagen(imag, posX, posY, 0, this.escala);
-	}
 	
 	void lanzarHechizo() { //juego llama a este metodo
 		 if(this.mago.getEnergia() >= this.costo) {
@@ -51,12 +46,10 @@ public class Hechizos {
 			this.activo = true;
 			this.tempAux = this.temporizador;
 			lanzarHechizo(this.dvd);
-			lanzarHechizo(this.murcielago);
-			
+			lanzarHechizo(this.murcielago);			
 		 }
-		 return;
-			
-			//agregar mas enemigos
+		 return;		
+			//agregar mas enemigos si fuera necesario
 		
 	}
 	

@@ -5,6 +5,8 @@ import java.awt.Image;
 import entorno.Entorno;
 import entorno.Herramientas;
 
+//Solo dibuja un trofeo y verifica si el mago lo agarró para la condición de victoria.
+
 public class Trofeo {
 	private double x,y;
 	boolean obtenido;

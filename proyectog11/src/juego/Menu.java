@@ -39,8 +39,8 @@ public class Menu {
 		entorno.escribirTexto("" + this.mago.getHP(), 700, 370);
 		entorno.escribirTexto("" + this.mago.getEnergia(), 700, 430);
 		entorno.escribirTexto("" + this.enemigosMuertos, 760, 562);
-		entorno.escribirTexto("" + 3, 667.5, 562); //copa
-		entorno.escribirTexto("" + this.oleada, 715, 507.5); //oleada
+		entorno.escribirTexto("" + 3, 667.5, 562); //copa o oleada final
+		entorno.escribirTexto("" + this.oleada, 715, 507.5); //oleada actual
 	}
 	
 	

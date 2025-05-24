@@ -24,6 +24,7 @@ public class Juego extends InterfaceJuego
 	private Boton[] boton;
 	private PocionVida[] pocionVida;
 	private PocionEnergia[] pocionEnergia;
+	private Explosion[] explosion;
 	private Trofeo trofeo;
 		
 	private Image bg;
@@ -56,8 +57,8 @@ public class Juego extends InterfaceJuego
 			}
 	}
 	
-	void generarPocion(double posX, double posY) {
-		double k = Math.random();
+	void generarPocion(double posX, double posY) { //llamado desde la muerte de un enemigo en movimientoyEstadoEnemigos.
+		double k = Math.random(); //50% de chance de crear ya sea una poción de vida o una de energía.
 		if(pocionesEnPantalla<5 && k<= 0.5 ) {
 			for(int i = 0 ; i<this.pocionVida.length; i++) {
 				if(this.pocionVida[i] == null) {
@@ -76,7 +77,7 @@ public class Juego extends InterfaceJuego
 		}
 	}
 	
-	void invencibilidad() {
+	void invencibilidad() { //periodo de invencibilidad del mago luego de ser dañado.
 		if (gondolf.iFrames>=1 && gondolf.invencible == true) {
 			gondolf.iFrames = gondolf.iFrames-1;
 			return;
@@ -91,40 +92,42 @@ public class Juego extends InterfaceJuego
 	public void controlBotones() {
 		for(int i = 0;  i<boton.length;i++) {
 		
-		if(this.boton[i].hechizo.activo == true) { //dibujo el hechizo lanzado
-			this.boton[i].hechizo.dibujarHechizo(); //la posición XY queda guardada al lanzar el hechizo, si lanzo el mismo hechizo
-			this.boton[i].hechizo.tempAux = this.boton[i].hechizo.tempAux -1;//^^ la posXY se sobreescribe
-			if(this.boton[i].hechizo.tempAux == 0) { //utilizo un temporizador interno del hechizo para saber por cuanto dibujarlo
-				this.boton[i].hechizo.activo = false;
-			}
-		}
 		if(entorno.sePresionoBoton(1) && this.boton[i].seleccionado == true) { //lanzamiento de hechizo
-			this.boton[i].lanzarHechizo();			
-		}
+			this.boton[i].lanzarHechizo();
+			for(int k = 0; k<this.explosion.length ; k++) {
+				if(this.explosion[k] == null) { //creo un objeto que dibuja el hechizo 
+					this.explosion[k] = new Explosion(entorno,this.boton[i].hechizo.posX,this.boton[i].hechizo.posY, this.boton[i].hechizo.tempAux, this.boton[i].hechizo.imag, this.boton[i].hechizo.escala);
+					break;
+					
+				}}}
 			
-		this.boton[i].dibujarBoton();	
-		
-		
-			
-		if(this.boton[i].seleccionado == false && entorno.mouseX()>= this.boton[i].x-(this.boton[i].ancho/2) && //detecta si el curso esta sobre el boton
+		this.boton[i].dibujarBoton(); //dibujo los botones	
+				
+		if(this.boton[i].seleccionado == false && entorno.mouseX()>= this.boton[i].x-(this.boton[i].ancho/2) && //detecta si el cursor esta sobre el boton
 		   entorno.mouseX()<= this.boton[i].x+(this.boton[i].ancho/2) &&
 		   entorno.mouseY()>= this.boton[i].y-(this.boton[i].alto/2) &&
 		   entorno.mouseY()<= this.boton[i].y+(this.boton[i].alto/2)) {
-			if(entorno.sePresionoBoton(1)) {
-				
-				for(int k = 0;  k<boton.length;k++) {			
+			if(entorno.sePresionoBoton(1)) {		
+				for(int k = 0;  k<boton.length;k++) {		//si se hizo click, deselecciono todos los botones	
 						this.boton[k].seleccionado = false;
 				}
-				this.boton[i].seleccionado = true;
+				this.boton[i].seleccionado = true; //finalmente, el boton elegido si para a ser seleccionado
 				return;
+				}}}}
+	
+	void dibujarHechizos() { //dibuja y nulifica los hechizos, NO HACE NINGUN CALCULO DE DAÑO O COLISION
+		for(int i = 0; i<this.explosion.length;i++) {
+			if(this.explosion[i] != null) {
+				this.explosion[i].dibujarHechizo();
+				this.explosion[i].temporizador--;
+				if(this.explosion[i].temporizador == 0) {
+					this.explosion[i] = null;
 				}
-			
 			}
-		
-		}		
+		}
 	}
 
-	public void movimientoMago(){
+	public void movimientoMago(){ //solo mueve al mago
 		if(entorno.sePresiono('w') || entorno.estaPresionada('w')) {
 			this.gondolf.moverArriba();
 		}
@@ -149,7 +152,7 @@ public class Juego extends InterfaceJuego
 		return r;
 	}
 	
-	void movimientoyEstadoEnemigos() {
+	void movimientoyEstadoEnemigos() { //dibuja, mueve, y nulifica a todos los enemigos, también aquí se generan las pociones
 		
 		estaVivo(this.dvd);
 		estaVivo(this.murcielago);
@@ -229,7 +232,7 @@ public class Juego extends InterfaceJuego
 		}
 	}
 		
-	void colisionRocas() {
+	void colisionRocas() {  //colisión entre el mago y las piedras
 		double n = 7.5; //control de las esquinas, + alto = esquinas + permisivas
 		for(int i = 0; i < rocas.length-1 ; i++) {
 			if(this.gondolf.getX()+this.gondolf.ancho/2 >= rocas[i].getX()-this.rocas[i].ancho/2 && 
@@ -266,7 +269,8 @@ public class Juego extends InterfaceJuego
 			}
 		}
 	}
-	private void crearMurcielago() {
+	
+	private void crearMurcielago() {  //algoritmo creador de murcielagos
 		if(this.enemigosEnPantalla<10 && this.ultimoCreado == 0) { 
 			for(int i = 0; i<this.murcielago.length ; i++) { //recorre mi array de 10 murcielagos y si encuentra una
 				if(this.murcielago[i] == null) { //posición libre, crea el murcielago ahí
@@ -279,7 +283,7 @@ public class Juego extends InterfaceJuego
 	}
 	private double[] posicionMurcielago() { //r[0] = x, r[1] = y
 		double k = Math.random();			//devuelve dos coordenadas aleatorias fuera de la pantalla
-		double[] r = new double[2];
+		double[] r = new double[2];			//solo lo usa crearMurcielagos
 		if(k<=0.25) {
 			r[0] = (entorno.ancho()-this.menu.ancho) * Math.random();
 			r[1] = -50;
@@ -300,12 +304,12 @@ public class Juego extends InterfaceJuego
 		return r;
 	}
 	
-	void crearbolasDeFuego() {
+	void crearbolasDeFuego() { //algoritmo que crea una pared de 5 bolas de fuego
 		if(this.bolasDeFuegoEnPantalla<15 && Math.random()>=0.999) {
 			
-			int cont = 0;
-			double k = Math.random();
-			double sumador = 0;
+			int cont = 0; //siempre se crean 5 bolas de fuego
+			double k = Math.random(); //valor constante dentro del algoritmo que decide desde que lado viene la pared
+			double sumador = 0;  //valor constante que espacia las bolas de fuego por 120 pixeles
 			for(int i = 0; cont < 5 && this.bolasDeFuegoEnPantalla<15 ; i++) { //recorre mi array de 10 murcielagos y si encuentra una
 				if(this.bolasDeFuego[i] == null) { //posición libre, crea el murcielago ahí
 					cont++;
@@ -318,8 +322,8 @@ public class Juego extends InterfaceJuego
 		}
 	}
 	
-	private double[] posicionbolaDeFuego(double k, double sumador) {
-		double[] r = new double[4];
+	private double[] posicionbolaDeFuego(double k, double sumador) { //hereda el lado de la pantalla donde debe crear la bola de fuego (k)
+		double[] r = new double[4]; // y también hereda la posición donde debe crearla (sumador).
 		
 		if(k<=0.25) { //crea 5 bolas de fuego en el lado superior
 			r[0] = 60 + sumador;
@@ -331,21 +335,21 @@ public class Juego extends InterfaceJuego
 		if(k>0.25 && k<=0.5) { //lado derecho de la pantalla
 			r[0] = (entorno.ancho()-this.menu.ancho)+50;
 			r[1] = 60 + sumador;
-			r[2] = -1;
-			r[3] = 0;
+			r[2] = -1;	//crecimiento X
+			r[3] = 0;	//crecimiento Y
 			return r;
 		}
 		if(k>0.5 && k<=0.75) { //lado inferior de la pantalla
 			r[0] = 60 + sumador;
 			r[1] = entorno.alto()+50;
-			r[2] = 0;
-			r[3] = -1;
+			r[2] = 0;	//crecimiento X
+			r[3] = -1;	//crecimiento Y
 			return r;
 		}
 		r[0] = -50; //lado izquierdo de la pantalla
 		r[1] = 60 + sumador;
-		r[2] = 1;
-		r[3] = 0;
+		r[2] = 1;	//crecimiento X
+		r[3] = 0;	//crecimiento Y
 		return r;
 	}
 	
@@ -378,6 +382,7 @@ public class Juego extends InterfaceJuego
 		//inicializar enemigos y sus arrays
 			this.pocionVida = new PocionVida[5];
 			this.pocionEnergia = new PocionEnergia[5];
+			this.explosion = new Explosion[10];
 			this.dvd = new DVD[2];
 			this.bolasDeFuego = new bolaDeFuego[15];
 			this.bolasDeFuegoEnPantalla = 0;
@@ -386,8 +391,8 @@ public class Juego extends InterfaceJuego
 			
 		//inicializar hechizos y botones
 			this.hechizos = new Hechizos[2];
-			this.hechizos[0] = new Hechizos(entorno, this.gondolf, "imagenesJuego/HechizoFuego.gif",1.0, 65, 2, 20, 50, this.dvd,this.murcielago);	
-			this.hechizos[1] = new Hechizos(entorno, this.gondolf, "imagenesJuego/HechizoViento.gif",0.20, 93, 1, 0, 25, this.dvd, this.murcielago);
+			this.hechizos[0] = new Hechizos(entorno, this.gondolf,"imagenesJuego/HechizoFuego.gif",1.0, 65, 2, 20, 50, this.dvd,this.murcielago);	
+			this.hechizos[1] = new Hechizos(entorno, this.gondolf, "imagenesJuego/muertImagen.png",0.20, 93, 1, 0, 25, this.dvd, this.murcielago);
 			
 			this.boton = new Boton[2];
 			this.boton[0] = new Boton(entorno, menu, 700.0, 270.0, this.hechizos[0], "imagenesJuego/botonFuegoSeleccionado.png","imagenesJuego/botonFuegoDeseleccionado.png");
@@ -425,10 +430,8 @@ public class Juego extends InterfaceJuego
 		if(this.menu.enemigosMuertos>=4 && this.oleada == 3) {
 			this.victoria = true;
 		}
-		
-		
+			
 			entorno.dibujarImagen(bg, (entorno.ancho()-this.menu.ancho)/2, entorno.alto()/2, 0, 1.0);
-
 			if(victoria == false) {
 				crearMurcielago();	
 				tickUltimoCreado();
@@ -457,6 +460,7 @@ public class Juego extends InterfaceJuego
 			menu.dibujarMenu(); 
 			controlBotones();
 			
+			dibujarHechizos();
 	}
 	
 
