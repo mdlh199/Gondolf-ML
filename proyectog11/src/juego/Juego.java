@@ -20,14 +20,17 @@ public class Juego extends InterfaceJuego
 	private Menu menu;
 	private DVD[] dvd;
 	private Murcielago[] murcielago;
+	private bolaDeFuego[] bolasDeFuego;
 	private Boton[] boton;
 	private PocionVida[] pocionVida;
 	private PocionEnergia[] pocionEnergia;
+	private Trofeo trofeo;
 		
 	private Image bg;
 	private int oleada;
 	private boolean victoria;
 	
+	private int bolasDeFuegoEnPantalla;
 	private int pocionesEnPantalla;
 	private int enemigosEnPantalla;
 	private int ultimoCreado;
@@ -89,9 +92,9 @@ public class Juego extends InterfaceJuego
 		for(int i = 0;  i<boton.length;i++) {
 		
 		if(this.boton[i].hechizo.activo == true) { //dibujo el hechizo lanzado
-			this.boton[i].hechizo.dibujarHechizo();
-			this.boton[i].hechizo.tempAux = this.boton[i].hechizo.tempAux -1;
-			if(this.boton[i].hechizo.tempAux == 0) {
+			this.boton[i].hechizo.dibujarHechizo(); //la posición XY queda guardada al lanzar el hechizo, si lanzo el mismo hechizo
+			this.boton[i].hechizo.tempAux = this.boton[i].hechizo.tempAux -1;//^^ la posXY se sobreescribe
+			if(this.boton[i].hechizo.tempAux == 0) { //utilizo un temporizador interno del hechizo para saber por cuanto dibujarlo
 				this.boton[i].hechizo.activo = false;
 			}
 		}
@@ -121,7 +124,6 @@ public class Juego extends InterfaceJuego
 		}		
 	}
 
-	
 	public void movimientoMago(){
 		if(entorno.sePresiono('w') || entorno.estaPresionada('w')) {
 			this.gondolf.moverArriba();
@@ -151,19 +153,41 @@ public class Juego extends InterfaceJuego
 		
 		estaVivo(this.dvd);
 		estaVivo(this.murcielago);
+		estaVivo(this.bolasDeFuego);
 		//agregar más enemigos
+	}
+	
+	private void estaVivo(bolaDeFuego[] enemigo) { //recibe el objeto para indicar que tipo de enemigo procesa, clonar para el resto de enemigos
+		for(int i = 0; i < enemigo.length ; i++ ){ //recorre todos los dvd
+			if(enemigo[i] != null && enemigo[i].fueraPantalla == true || this.victoria == true) { //si el objeto existe pero su vida es 0, lo nulifica			
+				if(this.victoria == false) {
+					this.bolasDeFuegoEnPantalla--;
+				}
+				
+				enemigo[i] = null;
+				}
+			
+				if(enemigo[i] != null && enemigo[i].fueraPantalla !=true) { //si esta vivo, se mueve y lo dibuja
+					enemigo[i].moverbolaDeFuego();
+					if(gondolf.invencible == false) {
+						enemigo[i].colisionMago();
+					}
+					enemigo[i].dibujarbolaDeFuego();
+				}
+		}
 	}
 	
 	private void estaVivo(DVD[] enemigo) { //recibe el objeto para indicar que tipo de enemigo procesa, clonar para el resto de enemigos
 		for(int i = 0; i < enemigo.length ; i++ ){ //recorre todos los dvd
 			if(enemigo[i] != null && enemigo[i].HP <= 0 || this.victoria == true) { //si el objeto existe pero su vida es 0, lo nulifica
 				
-				if(this.victoria == false) {
+				if(this.victoria == false) { //si la condicion de victoria no se cumplió, sumo 1 al contador del menu e intento generar una poción
 					this.menu.enemigosMuertos++;					
 					generarPocion(enemigo[i].getX(),enemigo[i].getY());						
 					}
 				enemigo[i] = null;
 				}
+			
 				if(enemigo[i] != null && enemigo[i].HP !=0) { //si esta vivo, se mueve y lo dibuja
 					enemigo[i].movimiento();
 					if(gondolf.invencible == false) {
@@ -173,24 +197,28 @@ public class Juego extends InterfaceJuego
 				}
 		}
 	}
+	
 	private void estaVivo(Murcielago[] enemigo) { //recibe el objeto para indicar que tipo de enemigo procesa, clonar para el resto de enemigos
 		for(int i = 0; i < enemigo.length ; i++ ){ //recorre todos los murcielagos
 			if(enemigo[i] != null && enemigo[i].HP <= 0 || this.victoria == true) { //si el objeto existe pero su vida es 0, lo nulifica
-				if(this.victoria == false) {
+				
+				if(this.victoria == false) { //si la condicion de victoria no se cumplió, sumo 1 al contador del menu e intento generar una poción
 					this.menu.enemigosMuertos++;
 					if(Math.random()>=0.85) {
 						generarPocion(enemigo[i].getX(),enemigo[i].getY());
 						}
 					}
+				
 				enemigo[i] = null;				
 				}
+			
 				if(enemigo[i] != null && enemigo[i].HP !=0) { //si esta vivo, se mueve y lo dibuja
 					enemigo[i].cambiarAngulo(this.gondolf.getX(), this.gondolf.getY());
 					enemigo[i].mover();
 					if(gondolf.invencible == false) {
 						enemigo[i].colisionMago();
 					}
-					enemigo[i].dibujarMurcielago();;
+					enemigo[i].dibujarMurcielago();
 				}		
 		}
 	}
@@ -243,7 +271,7 @@ public class Juego extends InterfaceJuego
 			for(int i = 0; i<this.murcielago.length ; i++) { //recorre mi array de 10 murcielagos y si encuentra una
 				if(this.murcielago[i] == null) { //posición libre, crea el murcielago ahí
 					this.murcielago[i] = new Murcielago(this.entorno,this.gondolf,posicionMurcielago());
-					setUltimoCreado();
+					setUltimoCreado(); //inicia un timer de aprox 2 segundos para crear el próximo
 					break;
 				}
 			}
@@ -271,6 +299,56 @@ public class Juego extends InterfaceJuego
 		r[1] = (entorno.alto() * Math.random());
 		return r;
 	}
+	
+	void crearbolasDeFuego() {
+		if(this.bolasDeFuegoEnPantalla<15 && Math.random()>=0.999) {
+			
+			int cont = 0;
+			double k = Math.random();
+			double sumador = 0;
+			for(int i = 0; cont < 5 && this.bolasDeFuegoEnPantalla<15 ; i++) { //recorre mi array de 10 murcielagos y si encuentra una
+				if(this.bolasDeFuego[i] == null) { //posición libre, crea el murcielago ahí
+					cont++;
+					bolasDeFuegoEnPantalla++;
+					this.bolasDeFuego[i] = new bolaDeFuego(this.entorno,this.gondolf, this.menu,posicionbolaDeFuego(k, sumador));	
+					sumador += 120;
+
+				}
+			}
+		}
+	}
+	
+	private double[] posicionbolaDeFuego(double k, double sumador) {
+		double[] r = new double[4];
+		
+		if(k<=0.25) { //crea 5 bolas de fuego en el lado superior
+			r[0] = 60 + sumador;
+			r[1] = -50;
+			r[2] = 0; //crecimiento X
+			r[3] = 1; //crecimiento Y
+			return r;
+		}
+		if(k>0.25 && k<=0.5) { //lado derecho de la pantalla
+			r[0] = (entorno.ancho()-this.menu.ancho)+50;
+			r[1] = 60 + sumador;
+			r[2] = -1;
+			r[3] = 0;
+			return r;
+		}
+		if(k>0.5 && k<=0.75) { //lado inferior de la pantalla
+			r[0] = 60 + sumador;
+			r[1] = entorno.alto()+50;
+			r[2] = 0;
+			r[3] = -1;
+			return r;
+		}
+		r[0] = -50; //lado izquierdo de la pantalla
+		r[1] = 60 + sumador;
+		r[2] = 1;
+		r[3] = 0;
+		return r;
+	}
+	
 	void setUltimoCreado() { //tiempo de espera para crear un nuevo enemigo
 		this.ultimoCreado = 250;
 	}
@@ -295,12 +373,14 @@ public class Juego extends InterfaceJuego
 			this.menu = new Menu(this.entorno,this.gondolf);
 			this.rocas = crearRocas();
 			this.gondolf = new Gondolf(entorno, menu); //SI NO SE ROMPE EL PROGRAMA XD
-
+			this.trofeo = new Trofeo(entorno, gondolf, menu);
+			
 		//inicializar enemigos y sus arrays
 			this.pocionVida = new PocionVida[5];
 			this.pocionEnergia = new PocionEnergia[5];
 			this.dvd = new DVD[2];
-			
+			this.bolasDeFuego = new bolaDeFuego[15];
+			this.bolasDeFuegoEnPantalla = 0;
 			this.murcielago = new Murcielago [10];
 			
 			
@@ -338,20 +418,27 @@ public class Juego extends InterfaceJuego
 			this.dvd[1] = new DVD(entorno,gondolf, 650,-1, 1, 0.7);
 			this.enemigosEnPantalla = this.enemigosEnPantalla+2;
 		}
-		if(this.menu.enemigosMuertos>=5 && this.oleada == 2) {
+		if(this.menu.enemigosMuertos>=3 && this.oleada == 2) {
 			this.oleada = 3;
 			this.menu.oleada = 3;
 		}
-		if(this.menu.enemigosMuertos>=7 && this.oleada == 3) {
+		if(this.menu.enemigosMuertos>=4 && this.oleada == 3) {
 			this.victoria = true;
 		}
 		
 		
 			entorno.dibujarImagen(bg, (entorno.ancho()-this.menu.ancho)/2, entorno.alto()/2, 0, 1.0);
-			crearMurcielago();	
-			tickUltimoCreado();
+
+			if(victoria == false) {
+				crearMurcielago();	
+				tickUltimoCreado();
+				if(oleada == 3 ) {
+					crearbolasDeFuego();
+				}
+			}
 		
 		//calculo de enemigos y hechizos
+
 			
 			movimientoyEstadoEnemigos(); //nulifica o continua moviendo y dibujando a los enemigos
 			estadoPocion();
@@ -361,7 +448,10 @@ public class Juego extends InterfaceJuego
 			colisionRocas();
 			
 		//dibujo del entorno (prioridad de layer de menor a mayor)
-			
+			if(victoria== true) {
+				trofeo.setY(trofeo.getY()+1);
+				trofeo.dibujarTrofeo();
+			}		
 			dibujarRocas();
 			gondolf.dibujarMago();					
 			menu.dibujarMenu(); 
